@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-const apiKey = '3B1F8DF1-9B92-4066-9224-F1B0791F71B1';
 
+const apiKeyOld = '3B1F8DF1-9B92-4066-9224-F1B0791F71B1';
+const apiKey = '59437F67-210F-4909-9838-FB527688551E';
 
 const List<String> currenciesList = [
   'AUD',
@@ -34,15 +35,14 @@ const List<String> cryptoList = [
 ];
 
 class CoinData {
-
-  Future getCoinData(String coinUrl) async{
-  http.Response response =await http.get(Uri.parse(coinUrl));
-  if (response.statusCode == 200) {
-    String data = response.body;
-    var decodedData = jsonDecode(data);
-    return decodedData;
-  } else
-    print(response.statusCode);
+  Future getCoinData(String coinUrl) async {
+    http.Response response = await http.get(Uri.parse(coinUrl));
+    if (response.statusCode == 200) {
+      String data = response.body;
+      var decodedData = jsonDecode(data);
+      return decodedData;
+    } else
+      print(response.statusCode);
   }
 }
 // api key =

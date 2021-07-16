@@ -24,8 +24,9 @@ class _PriceScreenState extends State<PriceScreen> {
       myCurrencies.add(newItem);
     }
     return DropdownButton<String>(
+      isDense: true,
       value: selectedCurrency,
-      dropdownColor: Colors.black87,
+      dropdownColor: Colors.lightBlueAccent,
       iconEnabledColor: Colors.white,
       items: myCurrencies,
       onChanged: (value) {
@@ -54,25 +55,26 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
- late double convertedBTC;
-  late double convertedETH;
-  late double convertedLTC;
+  var convertedBTC = 0.0;
+  var convertedETH = 0.0;
+  var convertedLTC = 0.0;
 
   @override
   void initState() {
     super.initState();
     updateValues();
   }
+
   String btc = 'BTC';
   String eth = 'ETH';
   String ltc = 'LTC';
   void updateValues() async {
-    var coinResponse1 = await coinData.getCoinData(
-        '$coinUrl$btc/$selectedCurrency?apikey=3B1F8DF1-9B92-4066-9224-F1B0791F71B1');
-    var coinResponse2 = await coinData.getCoinData(
-        '$coinUrl$eth/$selectedCurrency?apikey=3B1F8DF1-9B92-4066-9224-F1B0791F71B1');
-    var coinResponse3 = await coinData.getCoinData(
-        '$coinUrl$ltc/$selectedCurrency?apikey=3B1F8DF1-9B92-4066-9224-F1B0791F71B1');
+    var coinResponse1 = await coinData
+        .getCoinData('$coinUrl$btc/$selectedCurrency?apikey=$apiKey');
+    var coinResponse2 = await coinData
+        .getCoinData('$coinUrl$eth/$selectedCurrency?apikey=$apiKey');
+    var coinResponse3 = await coinData
+        .getCoinData('$coinUrl$ltc/$selectedCurrency?apikey=$apiKey');
     setState(() {
       convertedBTC = coinResponse1['rate'];
       convertedETH = coinResponse2['rate'];
@@ -80,40 +82,76 @@ class _PriceScreenState extends State<PriceScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text('🤑 Coin Ticker')),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          buildPadding(btc,convertedBTC),
-          buildPadding(eth,convertedETH),
-          buildPadding(ltc,convertedLTC),
-          Container(
-            height: 100.0,
-            alignment: Alignment.center,
-            padding: EdgeInsets.only(bottom: 10.0),
-            color: Colors.lightBlue,
-            child: Platform.isIOS ? iosPicker() : androidDropDownButton(),
-          ),
-        ],
-      ),
-    );
+    return (convertedBTC != 0.0 || convertedETH != 0.0 || convertedLTC != 0.0)
+        ? Scaffold(
+            appBar: AppBar(
+              title: Center(child: Text('🤑 Coin Ticker')),
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                buildPadding(btc, convertedBTC),
+                buildPadding(eth, convertedETH),
+                buildPadding(ltc, convertedLTC),
+                Container(
+                  height: 100.0,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  color: Colors.lightBlue,
+                  child: Platform.isIOS ? iosPicker() : androidDropDownButton(),
+                ),
+              ],
+            ),
+          )
+        : SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text('🤑 Coin Ticker'),
+              ),
+              bottomSheet: Container(
+                height: 100.0,
+                alignment: Alignment.center,
+                padding: EdgeInsets.only(bottom: 10.0),
+                color: Colors.lightBlue,
+                child: Platform.isIOS ? iosPicker() : androidDropDownButton(),
+              ),
+              body: Padding(
+                padding: EdgeInsets.only(left: 55.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                      backgroundColor: Colors.orangeAccent,
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                    Text(
+                      'Hang on, fetching current prices...',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
   }
 
   Padding buildPadding(String cryptoCoin, double convertedValue) {
     return Padding(
       padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
       child: Card(
-        color: Colors.lightBlueAccent,
+        color: Colors.orangeAccent,
         elevation: 15.0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(19.0),
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
